@@ -1,0 +1,32 @@
+Write your questions here!
+
+- What does it mean when we put Future<?>?? (What does the ? mean). See MsgBusImpl.
+- Can we implement Diary as a SingleTone Class?
+- Where do i save the output and how do i call it?
+-why does attackEvent return to src each and every time, even though we deleted it.
+
+
+
+- What does the use of the CallBack function look like?
+- Watch again the ps where dolav explains this (If he did)!
+
+-  What is a "marker" iterface?
+
+-  Does the fact that the message-bus class is singletone affect the tests i perform on it? If so, how?
+  ans: Yes, it is indeed singleton and we have to write the code that makes it that way. And test it.
+-  More important facts about messageBus Class (important for tests and implementation): 
+  2.1. Singletione.
+  2.2. Thread-safe.
+  2.3. Cant alter any of the given methods from the interface.
+  2.4. Can't add methods to this interface.
+-  Make sure we write tests for MessageBusImpl and not for MessageBus.
+  ans: Yes.
+-  Does each time futureTest run it is setUp this class or use run iterativily all the methods
+  Ans: Separated for each test.
+-  Can we make a CTR for Ewok so that the initial value for available is true? (We have to...).
+  ans: Yes. Required to.
+-  Need to make a public method "getInstance" for MessageBusImpl in order to make it singletone.
+  ans: Right. Do that.
+
+
+
