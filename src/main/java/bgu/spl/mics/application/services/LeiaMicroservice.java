@@ -51,6 +51,7 @@ public class LeiaMicroservice extends MicroService {
             ftr[i].get();
             i++;
         }
+
         DeactivationEvent deactEve = new DeactivationEvent();
         ftr[ftr.length - 2] = sendEvent(deactEve);                  // sending deactivation event to R2D2 via message bus
         ftr[ftr.length - 2].get();                                  //wait till R2D2 finish deactivating ship's shield

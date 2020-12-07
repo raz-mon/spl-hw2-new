@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder;
 import java.io.Reader;
 
 
+
 /** This is the Main class of the application. You should parse the input file,
  * create the different components of the application, and run the system.
  * In the end, you should output a JSON.
@@ -23,6 +24,8 @@ public class Main {
 			Diary diary = Diary.getInstance();
 			simulate(in);
 			outputConfig(diary, args[1]);
+
+
 		}
 		catch(Exception e){
 			System.out.println("problem accured");

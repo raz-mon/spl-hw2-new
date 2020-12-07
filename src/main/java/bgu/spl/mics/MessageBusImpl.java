@@ -15,7 +15,6 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Event<?>, Future<?>> EventToFuture;	// could be a problematic call, cause Future is Generic.
 	private Vector<String> names;
 	private static String last;		// last will hold the last M-S between Han-Solo and C3PO that was assigned an AttackEvent.
-	private Object Lock;
 
 	private static MessageBusImpl msgBus = null;
 
@@ -31,7 +30,6 @@ public class MessageBusImpl implements MessageBus {
 		this.queueMap = new ConcurrentHashMap<>(0);
 		this.EventToFuture = new ConcurrentHashMap<>(0);
 		last = null;
-		Lock = new Object();
 	}
 	
 	@Override
@@ -100,7 +98,7 @@ public class MessageBusImpl implements MessageBus {
 		if (this.names.contains(m.getName())){
 			this.queueMap.remove(m.getName());
 			this.interestsMap.remove(m.getName());
-			names.remove(m.getName());		// Check this removes correctly!!
+			names.remove(m.getName());
 		}
 	}
 

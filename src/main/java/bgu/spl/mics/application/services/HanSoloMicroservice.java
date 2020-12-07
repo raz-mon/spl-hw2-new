@@ -53,12 +53,10 @@ public class HanSoloMicroservice extends MicroService {
             catch (InterruptedException e){
                 System.out.println("Sleep had fail");
             }
-
             for (Integer serial : serials) {
                 Ewok e = ewks.getEwok(serial);
                 e.release();
             }
-
             complete(atk, true);
             diary.setTotalAttacks(diary.getTotalAttacks()+1);
             diary.setHanSoloFinish(System.currentTimeMillis());
