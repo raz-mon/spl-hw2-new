@@ -11,4 +11,4 @@ Write your questions here!
 - Do we need to put synchronized in subscribeEvent\Broadcast?
 - Decate with dolav about synchronized on complete method. Seems like there is no need, but still.
 - How much sleep time is recomended in order to assure that Liea won't send any messages as long as Han and C3PO are not registered? We want the MINIMAL SAFE TIME.
-- 
+- Any recomendations of tests??
