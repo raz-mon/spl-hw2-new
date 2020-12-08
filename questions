@@ -8,4 +8,5 @@ Write your questions here!
 - Where do i save the output and how do i call it? Did we do this correct? It is unclear to me.
 - ConcurrentmodficationError.
 - How will the tests be performed? Meaning do we have to erase all Eeoks, Queues, and so on.
+- Do we need to put synchronized in subscribeEvent\Broadcast?
 - 
