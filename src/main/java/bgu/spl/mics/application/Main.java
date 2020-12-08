@@ -8,6 +8,7 @@ import bgu.spl.mics.input;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.Reader;
+import java.util.concurrent.CountDownLatch;
 
 
 /** This is the Main class of the application. You should parse the input file,
@@ -15,6 +16,9 @@ import java.io.Reader;
  * In the end, you should output a JSON.
  */
 public class Main {
+
+	public static CountDownLatch countDownLatch = new CountDownLatch(4);
+
 	public static void main(String[] args) {
 		Gson gson = new Gson();
 		try {
@@ -48,7 +52,10 @@ public class Main {
 		t2.start();
 		t3.start();
 		t4.start();
-		t5.start();
+		try{
+			countDownLatch.await();		// Wait for all M-S's to finish initialize method.
+		} catch (Exception e) {System.out.println("problem accured with countDownLatch await()."); }
+		t5.start();		// Start Liea after all other M-S's have started.
 
 		try{
 			t1.join();

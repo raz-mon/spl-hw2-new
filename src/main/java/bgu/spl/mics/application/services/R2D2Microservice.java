@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.Main;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.ExplotionBroadcast;
 
@@ -33,5 +34,6 @@ public class R2D2Microservice extends MicroService {
             catch (InterruptedException e){ System.out.println("Sleep had failed"); }
             complete(deactivate, true);
         });
+        Main.countDownLatch.countDown();        // (-1) for the countDownLacth.
     }
 }

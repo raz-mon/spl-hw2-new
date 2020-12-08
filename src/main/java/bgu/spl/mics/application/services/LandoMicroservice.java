@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.Main;
 import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.ExplotionBroadcast;
 
@@ -27,6 +28,6 @@ public class LandoMicroservice  extends MicroService {
             }catch (InterruptedException e){ System.out.println("Sleep had fail"); }
             complete(bombardment, true);
         });
+        Main.countDownLatch.countDown();        // (-1) for the countDownLacth.
     }
-
 }

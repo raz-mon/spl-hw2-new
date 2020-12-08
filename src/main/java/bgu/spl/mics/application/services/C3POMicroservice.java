@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.Main;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.ExplotionBroadcast;
 import bgu.spl.mics.application.passiveObjects.Ewok;
@@ -50,6 +51,7 @@ public class C3POMicroservice extends MicroService {
             diary.setTotalAttacks(diary.getTotalAttacks()+1);
             diary.setC3POFinish(System.currentTimeMillis());
         });
+        Main.countDownLatch.countDown();        // (-1) for the countDownLacth.
     }
 }
 

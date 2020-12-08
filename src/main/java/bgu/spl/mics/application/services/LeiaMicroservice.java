@@ -31,18 +31,16 @@ public class LeiaMicroservice extends MicroService {
      */
     @Override
     protected void initialize() {
+
         subscribeBroadcast(ExplotionBroadcast.class, (exp) -> {diary.setLeiaTerminate(System.currentTimeMillis());
             terminate();});
-        try {
-            Thread.sleep(200);      //Let other Micro-sevices register and subscribe.
-        }catch (Exception e){ System.out.println("problem with sleep - Leia"); }
 
         for(int i = 0; i < attacks.length; i++){        //Send Events
             AttackEvent e = new AttackEvent(attacks[i]);
             ftr[i] = sendEvent(e);
         }
 
-        for (int i = 0; i < ftr.length-2; i++){
+        for (int i = 0; i < ftr.length-2; i++){     // Wait for attacks to be finished - futures are resolved.
             ftr[i].get();
         }
 
