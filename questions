@@ -1,14 +1,21 @@
 Write your questions here!
 
+
+- Debate with dolav about synchronized on complete method. Seems like there is no need, but still.
+- How much sleep time is recomended in order to assure that Liea won't send any messages as long as Han and C3PO are not registered? We want the MINIMAL SAFE TIME.
+- Is it problematic usinf future without <> (raw use).
+- Is the red line on the pom-file o.k?
 - Do the join() commands damage the conccurancy of our program? Seems not (by definitios of "t1.join()" that we saw on the internet. Make sure.
+- Why fo I need synchronizedd for notifyAll()?
+
+
 - What does it mean when we put Future<?>?? (What does the ? mean). See MsgBusImpl.
 - Do we need to use interrupt()?? Why not just wait for the explotion broadcast? It's just another option, but I don't see any reason to use this in our project..
 - An explanation about the "target" file and all what's going on in the project files wold be grate. What is The "Idea" file?
-- Is the red line on the pom-file o.k?
 - Where do i save the output and how do i call it? Did we do this correct? It is unclear to me.
 - ConcurrentmodficationError.
 - How will the tests be performed? Meaning do we have to erase all Eeoks, Queues, and so on.
 - Do we need to put synchronized in subscribeEvent\Broadcast?
-- Decate with dolav about synchronized on complete method. Seems like there is no need, but still.
-- How much sleep time is recomended in order to assure that Liea won't send any messages as long as Han and C3PO are not registered? We want the MINIMAL SAFE TIME.
+
+
 - Any recomendations of tests??
