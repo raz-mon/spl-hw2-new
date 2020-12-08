@@ -59,6 +59,11 @@ public class Main {
 		}catch(Exception e) {System.out.println("problem accured with joining threads");}		// In order to get a right answer at outputConfig.
 	}
 
+	/**
+	 *The purpose of this method is to generate a output file in the desired location.
+	 * @param diary
+	 * @param outPath
+	 */
 	public static void outputConfig(Diary diary, String outPath){
 		Gson g = new GsonBuilder().setPrettyPrinting().create();
 		try{
@@ -68,6 +73,5 @@ public class Main {
 			writer.close();
 		} catch(Exception e) {System.out.println("problem with generating output file");}
 	}
-
 }
 

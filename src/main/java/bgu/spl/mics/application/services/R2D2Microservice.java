@@ -1,9 +1,6 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.MessageBus;
-import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.ExplotionBroadcast;
 
@@ -33,9 +30,7 @@ public class R2D2Microservice extends MicroService {
                 Thread.sleep(duration);
                 diary.setR2D2Deactivate(System.currentTimeMillis());
             }
-            catch (InterruptedException e){
-                System.out.println("Sleep had failed");
-            }
+            catch (InterruptedException e){ System.out.println("Sleep had failed"); }
             complete(deactivate, true);
         });
     }

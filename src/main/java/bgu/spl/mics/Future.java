@@ -71,13 +71,10 @@ public class Future<T> {
 		try{
 			unit.sleep(timeout);		// This doesn't really implement correctly I think. We need to wait timeout timeunis, here we wait timeout milliseconds.
 		}
-		catch(Exception e){
-			System.out.println("Something went wrong, at get method of Future.");
-		}
+		catch(Exception e){ System.out.println("Something went wrong, at get method of Future."); }
 		if (isDone)
 			return result;
 		else
 			return null;
 	}
-
 }

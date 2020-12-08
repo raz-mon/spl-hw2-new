@@ -1,4 +1,5 @@
 package bgu.spl.mics;
+
 import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import bgu.spl.mics.application.messages.AttackEvent;
@@ -15,7 +16,6 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Event<?>, Future<?>> EventToFuture;	// could be a problematic call, cause Future is Generic.
 	private Vector<String> names;
 	private static String last;		// last will hold the last M-S between Han-Solo and C3PO that was assigned an AttackEvent.
-	private Object Lock;
 
 	private static MessageBusImpl msgBus = null;
 
@@ -31,7 +31,6 @@ public class MessageBusImpl implements MessageBus {
 		this.queueMap = new ConcurrentHashMap<>(0);
 		this.EventToFuture = new ConcurrentHashMap<>(0);
 		last = null;
-		Lock = new Object();
 	}
 	
 	@Override
@@ -52,46 +51,53 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
+		synchronized (names) {
 			for (String name : names) {
 				synchronized (this.queueMap.get(name)) {
-					if (this.interestsMap.get(name).contains(b.getClass()))
+					if (this.interestsMap.get(name).contains(b.getClass())) {
 						this.queueMap.get(name).add(b);        // Adds broadcast b to all relevant M-S.
-					this.queueMap.get(name).notifyAll();
+						this.queueMap.get(name).notifyAll();
+					}
 				}
 			}
+		}
 	}
 	
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
 		Future<T> future = new Future<T>();
 		if (e.getClass().equals(AttackEvent.class)){
-			// send by round robin manner
-			String turn = roundRobin();
+			String turn = roundRobin();			// send by round robin manner
 			synchronized (this.queueMap.get(turn)) {
 				this.queueMap.get(turn).add(e);        // Adds Message (Event in this case) e to the relevant M-S's queue (vector in our implementation)..
 				this.EventToFuture.put(e, future);
 				this.queueMap.get(turn).notifyAll();
 			}
 		}
-		else		// All Events but AttackEvent
-			for (String name : names){
-				synchronized (this.queueMap.get(name)) {
-					if (this.interestsMap.get(name).contains(e.getClass())) {
-						this.queueMap.get(name).add(e);        // Adds message (Event in this case) e to the relevant M-S (only one of those if this is not and AttackEvent). [Make sure there is only one].
-						this.EventToFuture.put(e, future);
-						this.queueMap.get(name).notifyAll();
+		else{		// All Events but AttackEvent
+			synchronized(names) {
+				for (String name : names) {
+					synchronized (this.queueMap.get(name)) {
+						if (this.interestsMap.get(name).contains(e.getClass())) {
+							this.queueMap.get(name).add(e);        // Adds message (Event in this case) e to the relevant M-S (only one of those if this is not and AttackEvent). [Make sure there is only one].
+							this.EventToFuture.put(e, future);
+							this.queueMap.get(name).notifyAll();
+						}
 					}
 				}
 			}
+		}
 		return future;
 	}
 
 	@Override
 	public void register(MicroService m) {
-		if (!this.names.contains(m.getName())){
-			this.queueMap.put(m.getName(), new Vector<Message>());
-			this.interestsMap.put(m.getName(), new Vector<Class<? extends Message>>());
-			this.names.add(m.getName());
+		synchronized(names) {
+			if (!this.names.contains(m.getName())) {
+				this.queueMap.put(m.getName(), new Vector<Message>());
+				this.interestsMap.put(m.getName(), new Vector<Class<? extends Message>>());
+				this.names.add(m.getName());
+			}
 		}
 	}
 
@@ -100,7 +106,7 @@ public class MessageBusImpl implements MessageBus {
 		if (this.names.contains(m.getName())){
 			this.queueMap.remove(m.getName());
 			this.interestsMap.remove(m.getName());
-			names.remove(m.getName());		// Check this removes correctly!!
+			names.remove(m.getName());
 		}
 	}
 
@@ -108,18 +114,14 @@ public class MessageBusImpl implements MessageBus {
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		synchronized (this.queueMap.get(m.getName())){
 			// if there is a message, return it. If not, wait.
-			while (this.queueMap.get(m.getName()).isEmpty()) {    // Can also be  a while (style Wait & Notify Design).
-				this.queueMap.get(m.getName()).wait();           // maybe m.wait()? wait() -> this msgBus will wait?
+			while (this.queueMap.get(m.getName()).isEmpty()) {
+				this.queueMap.get(m.getName()).wait();
 			}
 		Message msg = queueMap.get(m.getName()).firstElement();
-
-		System.out.println(m.getName() + " got a message: " + msg);
-
 		queueMap.get(m.getName()).remove(0);
 		return msg;
 		}
 	}
-
 
 	private static String roundRobin(){
 		// The idea is to return the correct (the one that was not assigned the last AttackEvent) name (via String) according to the round-Robin manner, between Han-Solo

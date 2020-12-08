@@ -1,16 +1,10 @@
 package bgu.spl.mics.application.services;
 
-
-import bgu.spl.mics.Message;
-import bgu.spl.mics.MessageBus;
-import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.ExplotionBroadcast;
 import bgu.spl.mics.application.passiveObjects.Ewok;
 import bgu.spl.mics.application.passiveObjects.Ewoks;
-
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,25 +34,19 @@ public class HanSoloMicroservice extends MicroService {
                     while (!e.isAvailable()) {
                         try {
                             e.wait();         // Remember to notify when the Ewok is released.
-                        } catch (InterruptedException t) {
-                            System.out.println("wait interrupted");
-                        }     // We need to wait here (this Thread) until the relevant Ewok is released.
+                        } catch (InterruptedException t) { System.out.println("wait interrupted"); }     // We need to wait here (this Thread) until the relevant Ewok is released.
                     }
                     e.acquire();
                 }
             }
             try{
                 Thread.sleep(atk.getAttack().getDuration());
-            }
-            catch (InterruptedException e){
-                System.out.println("Sleep had fail");
-            }
+            } catch (InterruptedException e){ System.out.println("Sleep had fail"); }
 
             for (Integer serial : serials) {
                 Ewok e = ewks.getEwok(serial);
                 e.release();
             }
-
             complete(atk, true);
             diary.setTotalAttacks(diary.getTotalAttacks()+1);
             diary.setHanSoloFinish(System.currentTimeMillis());

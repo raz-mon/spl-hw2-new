@@ -1,6 +1,6 @@
 package bgu.spl.mics;
-import bgu.spl.mics.application.passiveObjects.Diary;
 
+import bgu.spl.mics.application.passiveObjects.Diary;
 import java.util.HashMap;
 
 
@@ -143,7 +143,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate() {
         this.terminated = true;
-//        System.out.println(name + " has terminated gracfully!");
+        msgBus.unregister(this);
     }
 
     /**

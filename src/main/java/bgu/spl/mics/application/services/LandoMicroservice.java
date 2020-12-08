@@ -1,9 +1,6 @@
 package bgu.spl.mics.application.services;
 
-import bgu.spl.mics.MessageBus;
-import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.messages.ExplotionBroadcast;
 
@@ -28,7 +25,6 @@ public class LandoMicroservice  extends MicroService {
             try{
                 Thread.sleep(duration);
             }catch (InterruptedException e){ System.out.println("Sleep had fail"); }
-
             complete(bombardment, true);
         });
     }

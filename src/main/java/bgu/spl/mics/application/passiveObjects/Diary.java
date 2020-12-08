@@ -36,7 +36,7 @@ public class Diary {
         R2D2Terminate = 0;
         LeiaTerminate = 0;
         LandoTerminate = 0;
-    }        // Empty CTR.
+    }
 
     public int getTotalAttacks(){
         return this.totalAttacks;

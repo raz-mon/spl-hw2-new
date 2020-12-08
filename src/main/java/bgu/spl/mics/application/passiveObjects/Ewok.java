@@ -7,12 +7,15 @@ package bgu.spl.mics.application.passiveObjects;
  * You may add fields and methods to this class as you see fit (including public methods).
  */
 public class Ewok {
+
 	int serialNumber;
 	boolean available;
+
     public Ewok(int serialNumber){
       available = true;
         this.serialNumber = serialNumber;
     }
+
     /**
      * Acquires an Ewok
      */
@@ -28,17 +31,12 @@ public class Ewok {
     	this.notifyAll();
     }
 
-
-
     /**
      * @return serialNumber of Ewok
      */
     public int getSerialNumber(){
         return this.serialNumber;
     }
-
-
-   // ------------------------------ from here on - this is only for our internal testing.
 
     /**
      * This function is only for testing!!

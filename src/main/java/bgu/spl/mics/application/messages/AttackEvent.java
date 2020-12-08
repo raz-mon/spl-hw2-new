@@ -8,7 +8,7 @@ public class AttackEvent implements Event<Boolean> {
     /**
      * Empty constructor
      */
-    public AttackEvent(){}
+    public AttackEvent(){ }
 
     /**
      * constructor
