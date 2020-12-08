@@ -1,7 +1,8 @@
 Write your questions here!
 
+- Do the join() commands damage the conccurancy of our program? Seems not (by definitios of "t1.join()" that we saw on the internet. Make sure.
 - What does it mean when we put Future<?>?? (What does the ? mean). See MsgBusImpl.
-- Can we implement Diary as a SingleTone Class?
-- Where do i save the output and how do i call it? Did we do it correct (as asked).
-
-
+- Do we need to use interrupt()?? Why not just wait for the explotion broadcast? It's just another option, but I don't see any reason to use this in our project..
+- An explanation about the "target" file and all what's going on in the project files wold be grate. What is The "Idea" file?
+- Is the red line on the pom-file o.k?
+- Where do i save the output and how do i call it? Did we do this correct? It is unclear to me.
