@@ -11,10 +11,6 @@ public class Ewok {
 	int serialNumber;
 	boolean available;
 
-    /**
-     * CTR. Initializes the ewok to be available at first, wih the given serial number.
-     * @param serialNumber
-     */
     public Ewok(int serialNumber){
       available = true;
         this.serialNumber = serialNumber;
@@ -43,7 +39,7 @@ public class Ewok {
     }
 
     /**
-     * returns the available field of the ewok.
+     * This function is only for testing!!
      * @return
      */
     public boolean isAvailable(){

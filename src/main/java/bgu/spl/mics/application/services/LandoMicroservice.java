@@ -13,20 +13,12 @@ import bgu.spl.mics.application.messages.ExplotionBroadcast;
 public class LandoMicroservice  extends MicroService {
 
     private final long duration;
-
-    /**
-     * CTR.
-     * @param duration
-     */
     public LandoMicroservice(long duration) {
         super("Lando");
         this.duration = duration;
     }
 
     @Override
-    /**
-     * Initialize the Micro-Service, by subscribing it to the relevant messages, and defining callbacks for each event.
-     */
     protected void initialize() {
         subscribeBroadcast(ExplotionBroadcast.class, (exp) -> {diary.setLandoTerminate(System.currentTimeMillis());
             terminate();});

@@ -8,18 +8,23 @@ public class input {
     private long Lando;
     private int Ewoks;
 
-    /**
-     * Empty CTR.
-     */
-    public input() { }
+    public input() {
+    }
 
-    /**
-     * return the attacks field.
-     * @return
-     */
+    public String toString(){
+        String out = "";
+        for(int i=0; i<attacks.length; i++){
+            out = out + attacks[i].toString();
+            if (i!=attacks.length-1)
+                out = out + "\n";
+        }
+        out = out + "\n" + "R2D2: " + R2D2 + "\n" + "Lando: " + Lando + "\n" + "Ewoks: " + Ewoks;
+        return out;
+    }
+
     public Attack[] getAttacks(){
         for(int i=0; i<attacks.length; i++){
-            attacks[i].getSerials().sort((a,b) -> {return a-b;});       // Sort the serials at the attacks recieved (they may be un-ordered). This prevents dead-locks later on.
+            attacks[i].getSerials().sort((a,b) -> {return a-b;});
         }
         return attacks;
     }
@@ -32,20 +37,5 @@ public class input {
     }
     public int getEwoks(){
         return this.Ewoks;
-    }
-
-    /**
-     * This is mainly for testing pruposes. Yet is relevant for the class.
-     * @return
-     */
-    public String toString(){
-        String out = "";
-        for(int i=0; i<attacks.length; i++){
-            out = out + attacks[i].toString();
-            if (i!=attacks.length-1)
-                out = out + "\n";
-        }
-        out = out + "\n" + "R2D2: " + R2D2 + "\n" + "Lando: " + Lando + "\n" + "Ewoks: " + Ewoks;
-        return out;
     }
 }

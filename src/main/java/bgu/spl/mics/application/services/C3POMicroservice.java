@@ -17,18 +17,11 @@ import java.util.List;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class C3POMicroservice extends MicroService {
-
-    /**
-     * CTR.
-     */
     public C3POMicroservice() {
         super("C3PO");
     }
 
     @Override
-    /**
-     * Initialize the Micro-Service, by subscribing it to the relevant messages, and defining callbacks for each event.
-     */
     protected void initialize() {
         subscribeBroadcast(ExplotionBroadcast.class, (exp) -> {diary.setC3POTerminate(System.currentTimeMillis());
             terminate(); });

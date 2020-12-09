@@ -18,17 +18,11 @@ import java.util.List;
  */
 public class HanSoloMicroservice extends MicroService {
 
-    /**
-     * CTR.
-     */
     public HanSoloMicroservice() {
         super("Han");
     }
 
     @Override
-    /**
-     * Initialize the Micro-Service, by subscribing it to the relevant messages, and defining callbacks for each event.
-     */
     protected void initialize() {
         subscribeBroadcast(ExplotionBroadcast.class, (exp) -> {diary.setHanSoloTerminate(System.currentTimeMillis());
             terminate(); });

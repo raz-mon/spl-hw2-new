@@ -20,19 +20,12 @@ public class Diary {
 
     private static Diary diary = null;
 
-    /**
-     * Returns a new instance of Ewoks if there isn't an existing one. If there is, returns it.
-     * @return
-     */
     public static Diary getInstance(){
         if (diary == null)
             diary = new Diary();
          return diary;
     }
 
-    /**
-     * CTR.
-     */
     private Diary(){
         totalAttacks = 0;
         HanSoloFinish = 0;

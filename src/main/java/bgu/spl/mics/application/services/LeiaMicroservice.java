@@ -18,10 +18,7 @@ import bgu.spl.mics.application.passiveObjects.Attack;
 public class LeiaMicroservice extends MicroService {
 	private Attack[] attacks;
 	private Future<Boolean>[] ftr;
-    /**
-     * CTR.
-     * @param attacks
-     */
+
     public LeiaMicroservice(Attack[] attacks) {
         super("Leia");
         this.attacks = attacks;
@@ -30,19 +27,23 @@ public class LeiaMicroservice extends MicroService {
 
     /**
      * initialization for Leia:
-     * register , send AttackEvents and subscribe to relevant messages in messageBus.
+     * register , send eventAttacks and subscribe to a Broadcast in messageBus
      */
     @Override
     protected void initialize() {
+
         subscribeBroadcast(ExplotionBroadcast.class, (exp) -> {diary.setLeiaTerminate(System.currentTimeMillis());
             terminate();});
+
         for(int i = 0; i < attacks.length; i++){        //Send Events
             AttackEvent e = new AttackEvent(attacks[i]);
             ftr[i] = sendEvent(e);
         }
+
         for (int i = 0; i < ftr.length-2; i++){     // Wait for attacks to be finished - futures are resolved.
             ftr[i].get();
         }
+
         DeactivationEvent deactEve = new DeactivationEvent();
         ftr[ftr.length - 2] = sendEvent(deactEve);                  // sending deactivation event to R2D2 via message bus
         ftr[ftr.length - 2].get();                                  //wait till R2D2 finish deactivating ship's shield

@@ -23,20 +23,18 @@ public class Main {
 		Gson gson = new Gson();
 		try {
 			Reader reader = new FileReader(args[0]);
-			input in = gson.fromJson(reader, input.class);		// Read in-to in the data in the input Json file.
-			Diary diary = Diary.getInstance();					// Initialize diary instance. (Resolves the problem of multi-thread safe singleton if we do this here).
-			simulate(in);										// run simulate. The progam will continue to the next line only when all of the simulation is done.
-			outputConfig(diary, args[1]);						// Make output Json-file with the data in the diary. put it in args[1] (place & name).
+			input in = gson.fromJson(reader, input.class);
+			Diary diary = Diary.getInstance();
+			simulate(in);
+			outputConfig(diary, args[1]);
 		}
-		catch(Exception e){ System.out.println("problem accured"); }
+		catch(Exception e){
+			System.out.println("problem accured");
+		}
 	}
 
-	/**
-	 * Here the whole program will run. Initialize all Micro-Services. Start their threads and make sure all are done (closed) before exiting the program.
-	 * @param in
-	 */
 	public static void simulate(input in){
-		Ewoks ewks = Ewoks.getInstance(in.getEwoks());		// Ewoks is single-tone -> only one instance (this one) will be used through-out the program. So it is initialized here.
+		Ewoks ewks = Ewoks.getInstance(in.getEwoks());		// Ewoks is single-tone -> only one instance (this one) will be used through-out the program.
 
 		HanSoloMicroservice Han = new HanSoloMicroservice();
 		C3POMicroservice C3PO = new C3POMicroservice();
@@ -44,7 +42,7 @@ public class Main {
 		LandoMicroservice Lando = new LandoMicroservice(in.getLando());
 		LeiaMicroservice Leia = new LeiaMicroservice(in.getAttacks());
 
-		Thread t1 = new Thread(Han);		// Start a new thread with runnable Object Han.
+		Thread t1 = new Thread(Han);
 		Thread t2 = new Thread(C3PO);
 		Thread t3 = new Thread(R2D2);
 		Thread t4 = new Thread(Lando);
@@ -60,7 +58,7 @@ public class Main {
 		t5.start();		// Start Liea after all other M-S's have started.
 
 		try{
-			t1.join();					// Main thread waits for thread t1 to finish it's actions before continuing to the next row.
+			t1.join();
 			t2.join();
 			t3.join();
 			t4.join();
@@ -69,7 +67,7 @@ public class Main {
 	}
 
 	/**
-	 * The purpose of this method is to generate a output file in the desired location, with the desired data.
+	 *The purpose of this method is to generate a output file in the desired location.
 	 * @param diary
 	 * @param outPath
 	 */
