@@ -1,8 +1,10 @@
 package bgu.spl.mics;
 
+import bgu.spl.mics.application.messages.BombDestroyerEvent;
 import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.services.C3POMicroservice;
 import bgu.spl.mics.application.services.LeiaMicroservice;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
@@ -15,24 +17,35 @@ import bgu.spl.mics.application.services.HanSoloMicroservice;
 class MessageBusImplTest{
 
     private MessageBusImpl msgbus;
+    private MicroService m1;
+    private MicroService m2;
 
     @BeforeEach
     void setUp() {
         msgbus = MessageBusImpl.getInstance();
+        m1 = new HanSoloMicroservice();
+        m2 = new C3POMicroservice();
+    }
+
+    @AfterEach
+    void tearDown() {
+        msgbus.unregister(m1);
+        msgbus.unregister(m2);
+
     }
 
     @Test
     void testsubscribeEvent() {
-        MicroService m1 = new HanSoloMicroservice();
-        AttackEvent attack = new AttackEvent();
+        //MicroService m1 = new HanSoloMicroservice();
+        BombDestroyerEvent bomb = new BombDestroyerEvent();
         DeactivationEvent DE = new DeactivationEvent();
         msgbus.register(m1);
-        m1.subscribeEvent(attack.getClass(), (atk) -> {});
+        m1.subscribeEvent(bomb.getClass(), (bombardment) -> {});
+        msgbus.sendEvent(bomb);
         msgbus.sendEvent(DE);
-        msgbus.sendEvent(attack);
         try {
             AttackEvent a1 = (AttackEvent) msgbus.awaitMessage(m1);
-            assertEquals(attack, a1);
+            assertEquals(bomb, a1);
         }
         catch(Exception w){
             System.out.println("problem in awaitMessage from testsubscribeEvent");
@@ -41,8 +54,8 @@ class MessageBusImplTest{
 
     @Test
     void testsubscribeBroadcast() {
-        MicroService m1 = new HanSoloMicroservice();
-        MicroService m2 = new C3POMicroservice();
+        //MicroService m1 = new HanSoloMicroservice();
+        //MicroService m2 = new C3POMicroservice();
         // Maybe add another micro-service that isn't subscribed and make sure that he doesn't get the  message. (to avoid endless loop, it can be subscribed to another croadcast and we can make sure it gets that one and not the rather.
         msgbus.register(m1);
         msgbus.register(m2);
@@ -63,18 +76,20 @@ class MessageBusImplTest{
 
     @Test
     void testcomplete() {
-        Attack[] a = new Attack[0];
-        MicroService m = new LeiaMicroservice(a);
-        AttackEvent attack = new AttackEvent();
-        Future<Boolean> ftr = m.sendEvent(attack);
-        msgbus.complete(attack,true);
+        //Attack[] a = new Attack[0];
+        //MicroService m = new HanSoloMicroservice();
+        msgbus.register(m1);
+        DeactivationEvent deact = new DeactivationEvent();
+        m1.subscribeEvent(DeactivationEvent.class, (deactivate)->{});
+        Future<Boolean> ftr = msgbus.sendEvent(deact);
+        msgbus.complete(deact,true);
         assertTrue(ftr.get());
     }
 
     @Test
     void testsendBroadcast() {
-        MicroService m1 = new HanSoloMicroservice();
-        MicroService m2 = new C3POMicroservice();
+        //MicroService m1 = new HanSoloMicroservice();
+        //MicroService m2 = new C3POMicroservice();
         // Maybe add another micro-service that isn't subscribed and make sure that he doesn't get the  message. (to avoid endless loop, it can be subscribed to another croadcast and we can make sure it gets that one and not the rather.
         msgbus.register(m1);
         msgbus.register(m2);
@@ -97,8 +112,8 @@ class MessageBusImplTest{
 
     @Test
     void testsendEvent(){
-        MicroService m1 = new HanSoloMicroservice();
-        MicroService m2 = new LeiaMicroservice(new Attack[0]);
+        //MicroService m1 = new HanSoloMicroservice();
+        //MicroService m2 = new LeiaMicroservice(new Attack[0]);
         AttackEvent attack = new AttackEvent();
         msgbus.register(m1);
         msgbus.register(m2);
@@ -115,14 +130,14 @@ class MessageBusImplTest{
 
     @Test
     void testregister(){
-        MicroService m1 = new HanSoloMicroservice();
+        //MicroService m1 = new HanSoloMicroservice();
         msgbus.register(m1);
-        AttackEvent attack = new AttackEvent();
-        m1.subscribeEvent(attack.getClass(), (atk) -> {});
-        msgbus.sendEvent(attack);
+        DeactivationEvent deact = new DeactivationEvent();
+        m1.subscribeEvent(deact.getClass(), (deactivate) -> {});
+        msgbus.sendEvent(deact);
         try {
-            AttackEvent message = (AttackEvent) msgbus.awaitMessage(m1);
-            assertEquals(attack, message);
+            DeactivationEvent message = (DeactivationEvent) msgbus.awaitMessage(m1);
+            assertEquals(deact, message);
         }
         catch(Exception e){
             System.out.println("problem in awaitMessage from testregister");
@@ -131,15 +146,15 @@ class MessageBusImplTest{
 
     @Test
     void testawaitMessage(){
-        MicroService m1 = new HanSoloMicroservice();
-        MicroService m2 = new HanSoloMicroservice();
+        //MicroService m1 = new HanSoloMicroservice();
+        //MicroService m2 = new HanSoloMicroservice();
         msgbus.register(m1);
-        AttackEvent attack = new AttackEvent();
-        m1.subscribeEvent(attack.getClass(), (atk) -> {});
-        msgbus.sendEvent(attack);
+        DeactivationEvent deact = new DeactivationEvent();
+        m1.subscribeEvent(deact.getClass(), (atk) -> {});
+        msgbus.sendEvent(deact);
         try {
             AttackEvent message1 = (AttackEvent)msgbus.awaitMessage(m1);
-            assertEquals(message1 , attack);
+            assertEquals(message1 , deact);
         }
         catch(Exception e) {
             System.out.println("problem in awaitMessage from testawaitMessage");
