@@ -30,12 +30,12 @@ public class Future<T> {
      * 	       
      */
 	public synchronized T get() {
-		while (!this.isDone) {
+		while (!this.isDone) {		// Wait, while this future is not resolved.
 			try{
 				wait();
 			} catch(Exception e) {System.out.println("problem in future-wait");}
 		}
-        return this.result;
+        return this.result;		// When this future is resolved, return it.
 	}
 	
 	/**
@@ -44,7 +44,7 @@ public class Future<T> {
 	public synchronized void resolve (T result) {
 		this.result = result;
 		isDone = true;
-		notifyAll();
+		notifyAll();		// Notify all threads on this futures monitor (blocked due to synchronization).
 	}
 	
 	/**

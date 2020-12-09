@@ -17,12 +17,19 @@ public class R2D2Microservice extends MicroService {
 
     private final long duration;
 
+    /**
+     * CTR.
+     * @param duration
+     */
     public R2D2Microservice(long duration) {
         super("R2D2");
         this.duration = duration;
     }
 
     @Override
+    /**
+     * Initialize the Micro-Service, by subscribing it to the relevant messages, and defining callbacks for each event.
+     */
     protected void initialize() {
         subscribeBroadcast(ExplotionBroadcast.class, (exp) -> {diary.setR2D2Terminate(System.currentTimeMillis());
             terminate();});

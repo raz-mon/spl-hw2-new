@@ -25,6 +25,9 @@ public class MessageBusImpl implements MessageBus {
 		return msgBus;
 		}
 
+	/**
+	 * CTR.
+	 */
 	private MessageBusImpl(){
 		this.names = new Vector<String>(0,1);
 		this.interestsMap = new ConcurrentHashMap<>(0);
@@ -34,29 +37,41 @@ public class MessageBusImpl implements MessageBus {
 	}
 	
 	@Override
+	/**
+	 * Adds the relevant interest to the interests HashMap.
+	 */
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		this.interestsMap.get(m.getName()).add(type);
 	}
 
 	@Override
+	/**
+	 * Adds the relevant interest to the interests HashMap.
+	 */
 	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
 		this.interestsMap.get(m.getName()).add(type);
     }
 
 	@Override
+	/**
+	 * Resolve the relevant future.
+	 */
 	public <T> void complete(Event<T> e, T result) {
 		Future f = this.EventToFuture.get(e);
 		f.resolve(result);
 	}
 
 	@Override
+	/**
+	 * Send a message to all M-S's that are interested in this message-type.
+	 */
 	public void sendBroadcast(Broadcast b) {
 		synchronized (names) {
 			for (String name : names) {
 				synchronized (this.queueMap.get(name)) {
-					if (this.interestsMap.get(name).contains(b.getClass())) {
+					if (this.interestsMap.get(name).contains(b.getClass())) {		// Enter ony if the Micro-Service is interested in this message-type.
 						this.queueMap.get(name).add(b);        // Adds broadcast b to all relevant M-S.
-						this.queueMap.get(name).notifyAll();
+						this.queueMap.get(name).notifyAll();	// Notify all threads on the monitor of this message-queue.
 					}
 				}
 			}
@@ -64,14 +79,17 @@ public class MessageBusImpl implements MessageBus {
 	}
 	
 	@Override
+	/**
+	 * Send an event, to the desired Micro-Service.
+	 */
 	public <T> Future<T> sendEvent(Event<T> e) {
 		Future<T> future = new Future<T>();
-		if (e.getClass().equals(AttackEvent.class)){
-			String turn = roundRobin();			// send by round robin manner
+		if (e.getClass().equals(AttackEvent.class)){			// If this is an attackEvent, only HanSolo and C3PO are interested in it. Deliver in round-robin manner.
+			String turn = roundRobin();
 			synchronized (this.queueMap.get(turn)) {
 				this.queueMap.get(turn).add(e);        // Adds Message (Event in this case) e to the relevant M-S's queue (vector in our implementation)..
-				this.EventToFuture.put(e, future);
-				this.queueMap.get(turn).notifyAll();
+				this.EventToFuture.put(e, future);		// Save couple (e,future), in order to connect between them later when event is completed.
+				this.queueMap.get(turn).notifyAll();		// Notify all threads on the monitor of this message-queue.
 			}
 		}
 		else{		// All Events but AttackEvent
@@ -80,8 +98,8 @@ public class MessageBusImpl implements MessageBus {
 					synchronized (this.queueMap.get(name)) {
 						if (this.interestsMap.get(name).contains(e.getClass())) {
 							this.queueMap.get(name).add(e);        // Adds message (Event in this case) e to the relevant M-S (only one of those if this is not and AttackEvent). [Make sure there is only one].
-							this.EventToFuture.put(e, future);
-							this.queueMap.get(name).notifyAll();
+							this.EventToFuture.put(e, future);		// Save couple (e,future), in order to connect between them later when event is completed.
+							this.queueMap.get(name).notifyAll();	// Notify all threads on the monitor of this message-queue.
 						}
 					}
 				}
@@ -91,6 +109,9 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	@Override
+	/**
+	 * Register the given Micro-Service to the Message-Bus, by creating a message-queue, an interests-Map and adding it to the names that are registered until now.
+	 */
 	public void register(MicroService m) {
 		synchronized(names) {
 			if (!this.names.contains(m.getName())) {
@@ -102,6 +123,9 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	@Override
+	/**
+	 * unregister this M-S from this Message-Bus, by removing it from all data-bases.
+	 */
 	public void unregister(MicroService m) {
 		if (this.names.contains(m.getName())){
 			this.queueMap.remove(m.getName());
@@ -111,10 +135,12 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	@Override
+	/**
+	 * Micro-Service m waits for a message. It waits if the it's message-queue is empty.
+	 */
 	public Message awaitMessage(MicroService m) throws InterruptedException {
 		synchronized (this.queueMap.get(m.getName())){
-			// if there is a message, return it. If not, wait.
-			while (this.queueMap.get(m.getName()).isEmpty()) {
+			while (this.queueMap.get(m.getName()).isEmpty()) {		// if there is a message, return it. If not, wait.
 				this.queueMap.get(m.getName()).wait();
 			}
 		Message msg = queueMap.get(m.getName()).firstElement();
@@ -123,9 +149,11 @@ public class MessageBusImpl implements MessageBus {
 		}
 	}
 
+	/**
+	 * This method decides who between HanSolo and C3PO will get an attackEvent, in the round-robin manner.
+	 * @return
+	 */
 	private static String roundRobin(){
-		// The idea is to return the correct (the one that was not assigned the last AttackEvent) name (via String) according to the round-Robin manner, between Han-Solo
-		// and C3PO. this will be used at sendEvent.
 		if (last == null) {
 			last = "Han";
 			return "Han";        // If no-one was assigned a task yet -> return Han.

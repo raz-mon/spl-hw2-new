@@ -23,13 +23,15 @@ import java.util.HashMap;
  * <p>
  */
 public abstract class MicroService implements Runnable {
+
     private final String name;
-    private HashMap<Class<? extends Message>, Callback> msgToCallback;       //mapping a messege type into it's callback
+    private HashMap<Class<? extends Message>, Callback> msgToCallback;       //mapping a message type into it's callback
     private MessageBus msgBus;
     private boolean terminated;
-    protected Diary diary;      // Make sure it's ok that this is protected.
+    protected Diary diary;
 
     /**
+     * CTR
      * @param name the micro-service name (used mainly for debugging purposes -
      *             does not have to be unique)
      */
@@ -89,7 +91,7 @@ public abstract class MicroService implements Runnable {
      */
     protected final <B extends Broadcast> void subscribeBroadcast(Class<B> type, Callback<B> callback) {
         msgBus.subscribeBroadcast(type , this);
-        msgToCallback.put(type, callback);
+        msgToCallback.put(type, callback);          // put the couple (type, callback) in the data structure (HashMap). Later when recived a message of class type -> activate this callback.
     }
 
     /**
@@ -143,7 +145,6 @@ public abstract class MicroService implements Runnable {
      */
     protected final void terminate() {
         this.terminated = true;
-        msgBus.unregister(this);
     }
 
     /**
@@ -164,11 +165,12 @@ public abstract class MicroService implements Runnable {
     	initialize();
     	while (!terminated){
             try {
-                Message msg = msgBus.awaitMessage(this);
-                msgToCallback.get(msg.getClass()).call(msg);
+                Message msg = msgBus.awaitMessage(this);            // Wait for a message to be received at the relevant queue. This is blocking.
+                msgToCallback.get(msg.getClass()).call(msg);            // Activate relevant callback when a message is received.
             } catch (InterruptedException e) {
                 System.out.println(getName() + "problem accured at run of: " + name);
             }
         }
+    	msgBus.unregister(this);            // unregister this micro-service from the msgbus.
     }
 }
