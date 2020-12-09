@@ -49,6 +49,7 @@ public class LeiaMicroservice extends MicroService {
         BombDestroyerEvent bombardment = new BombDestroyerEvent();
         ftr[ftr.length - 1] = sendEvent(bombardment);               //sending bombdestroyer event to Lando via message bus
         ftr[ftr.length - 1].get();                                  //wait till lando will destroy the ship
+
         sendBroadcast(new ExplotionBroadcast());                    //the bad guys are dead and the ship exploded, send everyone a broadcast
     }
 }
