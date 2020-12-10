@@ -36,7 +36,6 @@ class MessageBusImplTest{
 
     @Test
     void testsubscribeEvent() {
-        //MicroService m1 = new HanSoloMicroservice();
         BombDestroyerEvent bomb = new BombDestroyerEvent();
         DeactivationEvent DE = new DeactivationEvent();
         msgbus.register(m1);
@@ -54,9 +53,6 @@ class MessageBusImplTest{
 
     @Test
     void testsubscribeBroadcast() {
-        //MicroService m1 = new HanSoloMicroservice();
-        //MicroService m2 = new C3POMicroservice();
-        // Maybe add another micro-service that isn't subscribed and make sure that he doesn't get the  message. (to avoid endless loop, it can be subscribed to another croadcast and we can make sure it gets that one and not the rather.
         msgbus.register(m1);
         msgbus.register(m2);
         m1.subscribeBroadcast(ExplotionBroadcast.class, (br) -> {});
@@ -76,8 +72,6 @@ class MessageBusImplTest{
 
     @Test
     void testcomplete() {
-        //Attack[] a = new Attack[0];
-        //MicroService m = new HanSoloMicroservice();
         msgbus.register(m1);
         DeactivationEvent deact = new DeactivationEvent();
         m1.subscribeEvent(DeactivationEvent.class, (deactivate)->{});
@@ -88,9 +82,6 @@ class MessageBusImplTest{
 
     @Test
     void testsendBroadcast() {
-        //MicroService m1 = new HanSoloMicroservice();
-        //MicroService m2 = new C3POMicroservice();
-        // Maybe add another micro-service that isn't subscribed and make sure that he doesn't get the  message. (to avoid endless loop, it can be subscribed to another croadcast and we can make sure it gets that one and not the rather.
         msgbus.register(m1);
         msgbus.register(m2);
         m1.subscribeBroadcast(ExplotionBroadcast.class, (br)->{});
@@ -112,8 +103,6 @@ class MessageBusImplTest{
 
     @Test
     void testsendEvent(){
-        //MicroService m1 = new HanSoloMicroservice();
-        //MicroService m2 = new LeiaMicroservice(new Attack[0]);
         AttackEvent attack = new AttackEvent();
         msgbus.register(m1);
         msgbus.register(m2);
@@ -130,7 +119,6 @@ class MessageBusImplTest{
 
     @Test
     void testregister(){
-        //MicroService m1 = new HanSoloMicroservice();
         msgbus.register(m1);
         DeactivationEvent deact = new DeactivationEvent();
         m1.subscribeEvent(deact.getClass(), (deactivate) -> {});
@@ -146,8 +134,6 @@ class MessageBusImplTest{
 
     @Test
     void testawaitMessage(){
-        //MicroService m1 = new HanSoloMicroservice();
-        //MicroService m2 = new HanSoloMicroservice();
         msgbus.register(m1);
         DeactivationEvent deact = new DeactivationEvent();
         m1.subscribeEvent(deact.getClass(), (atk) -> {});
