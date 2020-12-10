@@ -1,9 +1,7 @@
 package bgu.spl.mics;
 
 import bgu.spl.mics.application.messages.BombDestroyerEvent;
-import bgu.spl.mics.application.passiveObjects.Attack;
 import bgu.spl.mics.application.services.C3POMicroservice;
-import bgu.spl.mics.application.services.LeiaMicroservice;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,7 +41,7 @@ class MessageBusImplTest{
         msgbus.sendEvent(bomb);
         msgbus.sendEvent(DE);
         try {
-            AttackEvent a1 = (AttackEvent) msgbus.awaitMessage(m1);
+            BombDestroyerEvent a1 = (BombDestroyerEvent) msgbus.awaitMessage(m1);
             assertEquals(bomb, a1);
         }
         catch(Exception w){
@@ -139,7 +137,7 @@ class MessageBusImplTest{
         m1.subscribeEvent(deact.getClass(), (atk) -> {});
         msgbus.sendEvent(deact);
         try {
-            AttackEvent message1 = (AttackEvent)msgbus.awaitMessage(m1);
+            DeactivationEvent message1 = (DeactivationEvent)msgbus.awaitMessage(m1);
             assertEquals(message1 , deact);
         }
         catch(Exception e) {
