@@ -59,6 +59,7 @@ public class MessageBusImpl implements MessageBus {
 	public <T> void complete(Event<T> e, T result) {
 		Future f = this.EventToFuture.get(e);
 		f.resolve(result);
+		EventToFuture.remove(e);
 	}
 
 	@Override
