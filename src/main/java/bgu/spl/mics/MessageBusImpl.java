@@ -16,6 +16,7 @@ public class MessageBusImpl implements MessageBus {
 	private ConcurrentHashMap<Event<?>, Future<?>> EventToFuture;	// could be a problematic call, cause Future is Generic.
 	private Vector<String> names;
 	private static String last;		// last will hold the last M-S between Han-Solo and C3PO that was assigned an AttackEvent.
+	private ConcurrentHashMap<Class<? extends Event<?>>, Vector<String>> roundRobin;
 
 	private static MessageBusImpl msgBus = null;
 
@@ -33,6 +34,7 @@ public class MessageBusImpl implements MessageBus {
 		this.interestsMap = new ConcurrentHashMap<>(0);
 		this.queueMap = new ConcurrentHashMap<>(0);
 		this.EventToFuture = new ConcurrentHashMap<>(0);
+		this.roundRobin = new ConcurrentHashMap<>(0);
 		last = null;
 	}
 	
@@ -42,6 +44,13 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
 		this.interestsMap.get(m.getName()).add(type);
+		synchronized(roundRobin) {
+			if (!this.roundRobin.containsKey(type)) {
+				this.roundRobin.put(type, new Vector<>(0, 1));
+			}
+			if (!this.roundRobin.get(type).contains(m.getName()))
+				this.roundRobin.get(type).add(m.getName());        // If this queue doesn't contain this name, add it to the end of the queue (vector).
+		}
 	}
 
 	@Override
@@ -85,28 +94,16 @@ public class MessageBusImpl implements MessageBus {
 	 */
 	public <T> Future<T> sendEvent(Event<T> e) {
 		Future<T> future = new Future<T>();
-		if (e.getClass().equals(AttackEvent.class)){			// If this is an attackEvent, only HanSolo and C3PO are interested in it. Deliver in round-robin manner.
-			String turn = roundRobin();
+		String turn = roundRobin(e);
+		if (turn!=null) {
 			synchronized (this.queueMap.get(turn)) {
 				this.queueMap.get(turn).add(e);        // Adds Message (Event in this case) e to the relevant M-S's queue (vector in our implementation)..
-				this.EventToFuture.put(e, future);		// Save couple (e,future), in order to connect between them later when event is completed.
-				this.queueMap.get(turn).notifyAll();		// Notify all threads on the monitor of this message-queue.
+				this.EventToFuture.put(e, future);        // Save couple (e,future), in order to connect between them later when event is completed.
+				this.queueMap.get(turn).notifyAll();        // Notify all threads on the monitor of this message-queue.
 			}
+			return future;
 		}
-		else{		// All Events but AttackEvent
-			synchronized(names) {
-				for (String name : names) {
-					synchronized (this.queueMap.get(name)) {
-						if (this.interestsMap.get(name).contains(e.getClass())) {
-							this.queueMap.get(name).add(e);        // Adds message (Event in this case) e to the relevant M-S (only one of those if this is not and AttackEvent). [Make sure there is only one].
-							this.EventToFuture.put(e, future);		// Save couple (e,future), in order to connect between them later when event is completed.
-							this.queueMap.get(name).notifyAll();	// Notify all threads on the monitor of this message-queue.
-						}
-					}
-				}
-			}
-		}
-		return future;
+		return null;
 	}
 
 	@Override
@@ -132,6 +129,7 @@ public class MessageBusImpl implements MessageBus {
 			this.queueMap.remove(m.getName());
 			this.interestsMap.remove(m.getName());
 			names.remove(m.getName());
+			m.terminate();
 		}
 	}
 
@@ -154,18 +152,20 @@ public class MessageBusImpl implements MessageBus {
 	 * This method decides who between HanSolo and C3PO will get an attackEvent, in the round-robin manner.
 	 * @return
 	 */
-	private static String roundRobin(){
-		if (last == null) {
-			last = "Han";
-			return "Han";        // If no-one was assigned a task yet -> return Han.
-		}
-		else if (last == "Han"){
-			last = "C3PO";
-			return "C3PO";		// If the last AttackEvent was handled by Han -> return C3PO.
-		}
-		else{
-			last = "Han";
-			return "Han";		// If the last AttackEvent was handled by C3PO -> return Han.
+	private String roundRobin(Event e){
+		String out = null;
+		synchronized (roundRobin) {
+			if (roundRobin.containsKey(e.getClass()) && !roundRobin.get(e.getClass()).isEmpty()) {
+				out = roundRobin.get(e.getClass()).remove(0);
+				while (!this.names.contains(out) && !roundRobin.get(e.getClass()).isEmpty()) {
+					out = roundRobin.get(e.getClass()).remove(0);
+				}
+				if (this.names.contains(out)) {
+					roundRobin.get(e.getClass()).add(out);        // add the returned M-S to the end of the Vector, and increment the size one.
+				} else
+					out = null;
+			}
+			return out;
 		}
 	}
 }

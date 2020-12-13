@@ -48,4 +48,9 @@ public class Ewoks {
             throw new IndexOutOfBoundsException();
         return this.ewoks.get(i-1);         // ewok i (serial number) is placed in ewoks[i-1], because the ewoks are numbered 1,2,3...
     }
+
+    public static void reset(){
+        ewok = null;
+    }
+
 }

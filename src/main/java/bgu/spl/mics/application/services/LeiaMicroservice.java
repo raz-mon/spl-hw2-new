@@ -6,6 +6,7 @@ import bgu.spl.mics.application.messages.AttackEvent;
 import bgu.spl.mics.application.messages.DeactivationEvent;
 import bgu.spl.mics.application.messages.ExplotionBroadcast;
 import bgu.spl.mics.application.passiveObjects.Attack;
+import bgu.spl.mics.application.passiveObjects.Ewoks;
 
 /**
  * LeiaMicroservices Initialized with Attack objects, and sends them as  {@link AttackEvent}.
@@ -56,5 +57,6 @@ public class LeiaMicroservice extends MicroService {
         ftr[ftr.length - 1].get();                                  //wait till lando will destroy the ship
 
         sendBroadcast(new ExplotionBroadcast());                    //the bad guys are dead and the ship exploded, send everyone a broadcast
+        Ewoks.reset();
     }
 }
